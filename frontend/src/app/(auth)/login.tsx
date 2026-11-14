@@ -9,13 +9,13 @@ import PrimaryButton from '@/components/ui/PrimaryButton';
 import Checkbox from '@/components/ui/Checkbox';
 import { Colors, Radius } from '@/constants/auth-theme';
 import { isValidEmail, isValidPassword } from '@/utils/validators';
-import { login } from '@/services/auth';
+import { login, ApiError } from '@/services/auth';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async () => {
@@ -28,8 +28,15 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
+      setErrors((e) => ({ ...e, general: undefined }));
       await login(email.trim(), password);
       router.replace('/home'); // Dashboard utama
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setErrors((e) => ({ ...e, general: err.message }));
+      } else {
+        setErrors((e) => ({ ...e, general: 'Terjadi kesalahan. Coba lagi nanti.' }));
+      }
     } finally {
       setLoading(false);
     }
@@ -76,6 +83,10 @@ export default function LoginScreen() {
           </Pressable>
         </View>
 
+        {errors.general ? (
+          <Text style={styles.errorText}>{errors.general}</Text>
+        ) : null}
+
         <PrimaryButton label="Masuk" onPress={onSubmit} loading={loading} />
 
         <View style={styles.bottom}>
@@ -107,4 +118,5 @@ const styles = StyleSheet.create({
   link: { fontSize: 12.5, fontWeight: '700', color: Colors.primary },
   bottom: { flexDirection: 'row', justifyContent: 'center', marginTop: 16 },
   muted: { fontSize: 12.5, color: Colors.muted },
+  errorText: { fontSize: 13, color: '#E53E3E', textAlign: 'center', marginBottom: 12 },
 });

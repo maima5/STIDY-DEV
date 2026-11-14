@@ -9,7 +9,7 @@ import PrimaryButton from '@/components/ui/PrimaryButton';
 import Checkbox from '@/components/ui/Checkbox';
 import { Colors, Radius } from '@/constants/auth-theme';
 import { isValidEmail, isValidPassword } from '@/utils/validators';
-import { register } from '@/services/auth';
+import { register, ApiError } from '@/services/auth';
 
 type Errors = {
   email?: string;
@@ -17,6 +17,7 @@ type Errors = {
   password?: string;
   confirm?: string;
   terms?: string;
+  general?: string;
 };
 
 export default function RegisterScreen() {
@@ -52,8 +53,20 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
+      setErrors((e) => ({ ...e, general: undefined }));
       await register(email.trim(), name.trim(), password);
       router.replace('/login'); // TODO: sesuaikan alur setelah daftar
+    } catch (err) {
+      if (err instanceof ApiError) {
+        // Map specific error codes to the right field if applicable
+        if (err.code === 'EMAIL_TAKEN' || err.message.toLowerCase().includes('email')) {
+          setErrors((e) => ({ ...e, email: err.message }));
+        } else {
+          setErrors((e) => ({ ...e, general: err.message }));
+        }
+      } else {
+        setErrors((e) => ({ ...e, general: 'Terjadi kesalahan. Coba lagi nanti.' }));
+      }
     } finally {
       setLoading(false);
     }
@@ -136,6 +149,10 @@ export default function RegisterScreen() {
           />
         </View>
 
+        {errors.general ? (
+          <Text style={styles.errorText}>{errors.general}</Text>
+        ) : null}
+
         <PrimaryButton label="Buat Akun" onPress={onSubmit} loading={loading} />
 
         <View style={styles.bottom}>
@@ -175,4 +192,5 @@ const styles = StyleSheet.create({
   link: { fontSize: 12.5, fontWeight: '700', color: Colors.primary },
   bottom: { flexDirection: 'row', justifyContent: 'center', marginTop: 16 },
   muted: { fontSize: 12.5, color: Colors.muted },
+  errorText: { fontSize: 13, color: '#E53E3E', textAlign: 'center', marginBottom: 12 },
 });
