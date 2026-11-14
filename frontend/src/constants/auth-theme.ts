@@ -16,6 +16,9 @@ export const Colors = {
   deep: '#0F7A62',
   forest: '#1B3D36',
   mint: '#D9F3E9',
+  mintBorder: '#CFE9E0',
+  mintWash: '#EAF6F1',
+  track: '#E6EAE9',
   amber: '#D98B2B',
   amberSoft: '#FCEFD9',
 };
