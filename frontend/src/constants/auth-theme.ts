@@ -21,6 +21,8 @@ export const Colors = {
   track: '#E6EAE9',
   amber: '#D98B2B',
   amberSoft: '#FCEFD9',
+  violet: '#7C6BD6',
+  violetSoft: '#ECE9FB',
 };
 
 export const Radius = { input: 16, card: 28, button: 20 };

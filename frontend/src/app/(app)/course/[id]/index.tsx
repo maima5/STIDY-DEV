@@ -93,7 +93,7 @@ export default function CourseDetailScreen() {
 
             <GradientButton
               label="Mulai Sesi Fokus" iconLeft="play"
-              onPress={() => router.push('/focus-settings')}
+              onPress={() => router.push('/home/focus-settings')}
               style={{ marginTop: 22 }}
             />
           </View>

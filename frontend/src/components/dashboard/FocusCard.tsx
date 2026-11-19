@@ -9,11 +9,13 @@ type Props = {
   onToggle: () => void;
   onReset: () => void;
   session?: string;
+  /** Ketuk kartu untuk membuka halaman Waktu Fokus */
+  onPress?: () => void;
 };
 
-export default function FocusCard({ time, running, onToggle, onReset, session = 'Sesi 1 dari 4' }: Props) {
+export default function FocusCard({ time, running, onToggle, onReset, session = 'Sesi 1 dari 4', onPress }: Props) {
   return (
-    <View style={styles.shadow}>
+    <Pressable style={styles.shadow} onPress={onPress} disabled={!onPress}>
       <LinearGradient colors={['#0E8A70', '#2FAE8F']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
         <View style={styles.circleBig} />
         <View style={styles.circleSmall} />
@@ -42,7 +44,7 @@ export default function FocusCard({ time, running, onToggle, onReset, session = 
           </View>
         </View>
       </LinearGradient>
-    </View>
+    </Pressable>
   );
 }
 

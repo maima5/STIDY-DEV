@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import AppHeader from '@/components/dashboard/AppHeader';
 import FocusCard from '@/components/dashboard/FocusCard';
 import CountdownCard from '@/components/dashboard/CountdownCard';
@@ -9,12 +9,12 @@ import StatCard from '@/components/dashboard/StatCard';
 import InsightCard from '@/components/dashboard/InsightCard';
 import { Colors } from '@/constants/auth-theme';
 import { MOCK_USER } from '@/constants/mock-user';
-import { useFocusTimer } from '@/hooks/use-focus-timer';
+import { useFocus } from '@/context/focus-context';
 
 const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
 export default function HomeScreen() {
-  const timer = useFocusTimer();
+  const timer = useFocus();
   const today = new Date();
 
   return (
@@ -35,7 +35,11 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <FocusCard time={timer.time} running={timer.running} onToggle={timer.toggle} onReset={timer.reset} />
+        <FocusCard
+          time={timer.time} running={timer.running} onToggle={timer.toggle} onReset={timer.reset}
+          session={`Sesi ${timer.session} dari ${timer.settings.sessions}`}
+          onPress={() => router.push('/home/focus-settings' as Href)}
+        />
 
         {/* hitung mundur */}
         <SectionHeader

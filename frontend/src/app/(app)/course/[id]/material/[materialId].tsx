@@ -99,7 +99,7 @@ export default function MaterialDetailScreen() {
       <View style={[styles.bottom, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <GradientButton
           label="Mulai Timer" iconLeft="play" variant="soft" height={52}
-          onPress={() => router.push('/focus-settings')} style={{ flex: 0.9 }}
+          onPress={() => router.push('/home/focus-settings')} style={{ flex: 0.9 }}
         />
         <GradientButton
           label={material.done ? 'Batalkan Selesai' : 'Tandai Selesai'}

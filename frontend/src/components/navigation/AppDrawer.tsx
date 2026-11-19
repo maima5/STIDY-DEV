@@ -15,7 +15,7 @@ const MENU: { label: string; href: string; icon: (c: string) => React.ReactNode 
   { label: 'Beranda', href: '/home', icon: (c) => <Feather name="home" size={20} color={c} /> },
   { label: 'Jadwal', href: '/schedule', icon: (c) => <Feather name="calendar" size={20} color={c} /> },
   { label: 'Hitung Mundur', href: '/countdown', icon: (c) => <Feather name="clock" size={20} color={c} /> },
-  { label: 'Pengatur Waktu Fokus', href: '/focus-settings', icon: (c) => <Feather name="target" size={20} color={c} /> },
+  { label: 'Pengatur Waktu Fokus', href: '/home/focus-settings', icon: (c) => <Feather name="target" size={20} color={c} /> },
   { label: 'Ringkasan AI', href: '/ai-summary', icon: (c) => <Ionicons name="sparkles-outline" size={20} color={c} /> },
 ];
 

@@ -13,12 +13,14 @@ type Props = {
   /** 'solid' = gradien hijau, 'soft' = mint lembut, 'outline' = putih bergaris */
   variant?: 'solid' | 'soft' | 'outline';
   height?: number;
+  /** Ganti warna gradien varian 'solid' */
+  colors?: [string, string];
   style?: StyleProp<ViewStyle>;
 };
 
 /** Tombol dengan label di tengah dan ikon opsional di kiri/kanan. */
 export default function GradientButton({
-  label, onPress, iconLeft, iconRight, variant = 'solid', height = 54, style,
+  label, onPress, iconLeft, iconRight, variant = 'solid', height = 54, colors, style,
 }: Props) {
   const solid = variant === 'solid';
   const color = solid ? '#fff' : variant === 'soft' ? Colors.deep : Colors.muted;
@@ -34,11 +36,11 @@ export default function GradientButton({
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [solid && styles.shadow, { opacity: pressed ? 0.88 : 1 }, style]}
+      style={({ pressed }) => [solid && styles.shadow, solid && !!colors && { shadowColor: colors[1] }, { opacity: pressed ? 0.88 : 1 }, style]}
     >
       {solid ? (
         <LinearGradient
-          colors={[Colors.primaryLight, Colors.primaryDark]}
+          colors={colors ?? [Colors.primaryLight, Colors.primaryDark]}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={[styles.btn, { height }]}
         >
