@@ -23,8 +23,12 @@ const cookieOptions = {
 // ---------- schemas ----------
 const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email('Email tidak valid'),
-  name: z.string().trim().min(1, 'Nama wajib diisi').max(100),
-  password: z.string().min(8, 'Minimal 8 karakter').max(72, 'Maksimal 72 karakter'),
+  name: z.string().trim().min(1, 'Nama wajib diisi').max(100)
+    .regex(/^\p{L}[\p{L}\s'.-]*$/u,
+      'Nama hanya boleh huruf, spasi, titik, apostrof, atau strip'),
+  password: z.string().min(8, 'Minimal 8 karakter').max(72, 'Maksimal 72 karakter')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)\S+$/,
+      'Harus memuat huruf kecil, huruf besar, angka, tanpa spasi'),
 });
 const loginSchema = z.object({
   identifier: z.string().trim().min(1, 'Wajib diisi'), // email

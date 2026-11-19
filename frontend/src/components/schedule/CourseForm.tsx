@@ -15,7 +15,7 @@ import { Course, CourseInput } from '@/types/schedule';
 type Props = {
   mode: 'add' | 'edit';
   initial?: Course;
-  onSubmit: (input: CourseInput) => void;
+  onSubmit: (input: CourseInput) => void | Promise<void>;
   onCancel: () => void;
 };
 
@@ -42,6 +42,7 @@ export default function CourseForm({ mode, initial, onSubmit, onCancel }: Props)
       : [{ key: 'row-init', title: '' }],
   );
   const [errors, setErrors] = useState<{ name?: string; examDate?: string; materials?: string }>({});
+  const [saving, setSaving] = useState(false);
 
   const addRow = () => setRows((prev) => [...prev, { key: nextKey(), title: '' }]);
   const removeRow = (key: string) =>
@@ -49,7 +50,8 @@ export default function CourseForm({ mode, initial, onSubmit, onCancel }: Props)
   const editRow = (key: string, title: string) =>
     setRows((prev) => prev.map((r) => (r.key === key ? { ...r, title } : r)));
 
-  const submit = () => {
+  const submit = async () => {
+    if (saving) return;
     const materials = rows
       .map((r) => ({ id: r.id, title: r.title.trim() }))
       .filter((r) => r.title);
@@ -59,7 +61,14 @@ export default function CourseForm({ mode, initial, onSubmit, onCancel }: Props)
     if (!materials.length) next.materials = 'Tambahkan minimal satu materi';
     setErrors(next);
     if (Object.keys(next).length) return;
-    onSubmit({ name: name.trim(), examDate, hoursPerDay, materials });
+    setSaving(true);
+    try {
+      await onSubmit({ name: name.trim(), examDate, hoursPerDay, materials });
+    } catch {
+      // pesan error sudah ditampilkan oleh ScheduleProvider
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -144,7 +153,7 @@ export default function CourseForm({ mode, initial, onSubmit, onCancel }: Props)
             ))}
             {!!errors.materials && <Text style={[styles.error, { marginTop: 0, marginBottom: 8 }]}>{errors.materials}</Text>}
 
-            <GradientButton label={copy.submit} iconRight="check" onPress={submit} style={{ marginTop: 8 }} />
+            <GradientButton label={saving ? 'Menyimpan...' : copy.submit} iconRight={saving ? undefined : 'check'} onPress={submit} style={{ marginTop: 8 }} />
             <GradientButton label="Batal" variant="outline" height={48} onPress={onCancel} style={{ marginTop: 10 }} />
           </View>
         </ScrollView>

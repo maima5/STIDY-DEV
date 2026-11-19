@@ -8,7 +8,7 @@ import TextField from '@/components/ui/TextField';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import Checkbox from '@/components/ui/Checkbox';
 import { Colors, Radius } from '@/constants/auth-theme';
-import { isValidEmail, isValidPassword } from '@/utils/validators';
+import { isValidEmail, isValidName, passwordError } from '@/utils/validators';
 import { register, ApiError } from '@/services/auth';
 
 type Errors = {
@@ -36,10 +36,12 @@ export default function RegisterScreen() {
     email: !email.trim()
       ? 'Alamat email wajib diisi.'
       : !isValidEmail(email) ? 'Masukkan alamat email yang valid.' : undefined,
-    name: !name.trim() ? 'Nama belakang wajib diisi.' : undefined,
-    password: !password
-      ? 'Kata sandi wajib diisi.'
-      : !isValidPassword(password) ? 'Gunakan minimal 8 karakter.' : undefined,
+    name: !name.trim()
+      ? 'Nama belakang wajib diisi.'
+      : !isValidName(name)
+        ? 'Nama hanya boleh huruf, spasi, titik, apostrof, atau strip (2-100).'
+        : undefined,
+    password: passwordError(password),
     confirm: !confirm
       ? 'Konfirmasi wajib diisi.'
       : confirm !== password ? 'Kata sandi tidak cocok.' : undefined,

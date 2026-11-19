@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authRoutes from '../modules/auth/auth.routes';
+import scheduleRoutes from '../modules/schedules/schedules.routes';
 import { requireAuth } from '../middleware/auth';
 import { AppError } from '../utils/errors';
 import { ok } from '../utils/response';
@@ -13,12 +14,12 @@ api.get('/health', async (_req, res) => {
 });
 
 api.use('/auth', authRoutes);
+api.use('/schedules', scheduleRoutes);   // CRUD jadwal belajar (mata kuliah, materi, lampiran)
 
 // Placeholder: kerjakan di task berikutnya
 const notImplemented = Router().use(requireAuth, () => {
   throw new AppError(501, 'NOT_IMPLEMENTED', 'Endpoint belum diimplementasi');
 });
-api.use('/schedules', notImplemented);   // CRUD jadwal belajar
 api.use('/sessions', notImplemented);    // Study sessions
 api.use('/summaries', notImplemented);   // POST ringkasan AI (Gemini), GET riwayat
 

@@ -1,4 +1,5 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { Href, router } from 'expo-router';
@@ -15,17 +16,28 @@ import { Course } from '@/types/schedule';
 import { confirmAction } from '@/utils/confirm';
 
 export default function ScheduleScreen() {
-  const { courses, deleteCourse } = useSchedule();
+  const { courses, deleteCourse, loading, error, refresh } = useSchedule();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refresh();
+    setRefreshing(false);
+  };
 
   const onDelete = (course: Course) =>
-    confirmAction('Hapus jadwal?', `"${course.name}" beserta seluruh materinya akan dihapus.`, () => deleteCourse(course.id));
+    confirmAction('Hapus jadwal?', `"${course.name}" beserta seluruh materinya akan dihapus.`, () => { deleteCourse(course.id).catch(() => {}); });
 
   return (
     <SafeAreaView edges={['top']} style={styles.safe}>
       <AppHeader initials={MOCK_USER.initials} />
       <View style={{ flex: 1 }}>
         <ScreenBackground />
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
+        >
           {/* breadcrumb */}
           <View style={styles.crumbs}>
             <Text style={styles.crumb} onPress={() => router.navigate('/home')}>Beranda</Text>
@@ -43,7 +55,14 @@ export default function ScheduleScreen() {
           <Text style={styles.sub}>Atur target belajar berdasarkan mata kuliah agar progresmu tetap terarah.</Text>
 
           <View style={styles.list}>
-            {courses.length === 0 ? (
+            {loading ? (
+              <ActivityIndicator color={Colors.primary} style={{ paddingVertical: 32 }} />
+            ) : error && courses.length === 0 ? (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>Gagal memuat jadwal: {error}</Text>
+                <Text style={styles.retry} onPress={onRefresh}>Coba lagi</Text>
+              </View>
+            ) : courses.length === 0 ? (
               <EmptySchedule />
             ) : (
               courses.map((course) => (
@@ -77,4 +96,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 30, fontWeight: '800', color: Colors.text, marginTop: 14, letterSpacing: -0.5 },
   sub: { fontSize: 12.5, lineHeight: 20, color: Colors.muted, marginTop: 10, maxWidth: 340 },
   list: { marginTop: 26 },
+  errorBox: { alignItems: 'center', paddingVertical: 28, gap: 10 },
+  errorText: { fontSize: 12, color: Colors.error, textAlign: 'center' },
+  retry: { fontSize: 12.5, fontWeight: '700', color: Colors.deep },
 });

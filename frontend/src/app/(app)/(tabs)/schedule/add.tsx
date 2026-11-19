@@ -10,7 +10,7 @@ export default function AddCourseScreen() {
     <CourseForm
       mode="add"
       onCancel={goBack}
-      onSubmit={(input) => { addCourse(input); goBack(); }}
+      onSubmit={async (input) => { await addCourse(input); goBack(); }}
     />
   );
 }

@@ -4,6 +4,7 @@ export interface Attachment {
   id: string;
   name: string;
   description: string;
+  url?: string;
 }
 
 export interface MaterialSummary {

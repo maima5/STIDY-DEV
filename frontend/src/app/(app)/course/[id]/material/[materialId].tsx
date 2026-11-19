@@ -4,6 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons';
 import { Href, Redirect, router, useLocalSearchParams } from 'expo-router';
 import { AttachmentsTab, NotesTab, SummaryTab } from '@/components/schedule/MaterialTabs';
+import LoadingScreen from '@/components/schedule/LoadingScreen';
 import ScreenBackground from '@/components/schedule/ScreenBackground';
 import StackHeader from '@/components/schedule/StackHeader';
 import { Eyebrow } from '@/components/schedule/ScheduleBits';
@@ -22,11 +23,12 @@ const TABS: { key: TabKey; label: string }[] = [
 export default function MaterialDetailScreen() {
   const { id, materialId } = useLocalSearchParams<{ id: string; materialId: string }>();
   const insets = useSafeAreaInsets();
-  const { getCourse, toggleMaterial, saveNote, removeAttachment } = useSchedule();
+  const { getCourse, toggleMaterial, saveNote, removeAttachment, loading } = useSchedule();
   const [tab, setTab] = useState<TabKey>('summary');
 
   const course = getCourse(id);
   const index = course?.materials.findIndex((m) => m.id === materialId) ?? -1;
+  if (!course && loading) return <LoadingScreen />;
   if (!course || index < 0) return <Redirect href="/schedule" />;
   const material = course.materials[index];
 

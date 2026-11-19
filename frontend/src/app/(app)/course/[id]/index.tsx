@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
 import { Href, Redirect, router, useLocalSearchParams } from 'expo-router';
 import AddMaterialModal from '@/components/schedule/AddMaterialModal';
+import LoadingScreen from '@/components/schedule/LoadingScreen';
 import MaterialRow from '@/components/schedule/MaterialRow';
 import ScreenBackground from '@/components/schedule/ScreenBackground';
 import StackHeader from '@/components/schedule/StackHeader';
@@ -29,12 +30,13 @@ const goBack = () => (router.canGoBack() ? router.back() : router.replace('/sche
 export default function CourseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
-  const { getCourse, deleteCourse, toggleMaterial, addMaterial } = useSchedule();
+  const { getCourse, deleteCourse, toggleMaterial, addMaterial, loading } = useSchedule();
   const [filter, setFilter] = useState<MaterialFilter>('all');
   const [menuOpen, setMenuOpen] = useState(false);
   const [adding, setAdding] = useState(false);
 
   const course = getCourse(id);
+  if (!course && loading) return <LoadingScreen />;
   if (!course) return <Redirect href="/schedule" />;
 
   const { total, done, percent } = courseProgress(course);
@@ -46,7 +48,7 @@ export default function CourseDetailScreen() {
     if (action === 'edit') return router.push(`/schedule/edit/${course.id}` as Href);
     confirmAction('Hapus jadwal?', `"${course.name}" beserta seluruh materinya akan dihapus.`, () => {
       goBack();
-      deleteCourse(course.id);
+      deleteCourse(course.id).catch(() => {}); // pesan error sudah ditampilkan oleh ScheduleProvider
     });
   };
 
@@ -145,7 +147,7 @@ export default function CourseDetailScreen() {
       <AddMaterialModal
         visible={adding}
         onClose={() => setAdding(false)}
-        onSubmit={(title) => addMaterial(course.id, title)}
+        onSubmit={(title) => addMaterial(course.id, title).catch(() => {})}
       />
     </SafeAreaView>
   );

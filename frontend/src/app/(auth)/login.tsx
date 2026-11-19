@@ -8,7 +8,7 @@ import TextField from '@/components/ui/TextField';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import Checkbox from '@/components/ui/Checkbox';
 import { Colors, Radius } from '@/constants/auth-theme';
-import { isValidEmail, isValidPassword } from '@/utils/validators';
+import { isValidEmail } from '@/utils/validators';
 import { login, ApiError } from '@/services/auth';
 
 export default function LoginScreen() {
@@ -21,7 +21,7 @@ export default function LoginScreen() {
   const onSubmit = async () => {
     const next = {
       email: isValidEmail(email) ? undefined : 'Masukkan alamat email yang valid.',
-      password: isValidPassword(password) ? undefined : 'Gunakan minimal 8 karakter.',
+      password: password.length >= 8 ? undefined : 'Gunakan minimal 8 karakter.',
     };
     setErrors(next);
     if (next.email || next.password) return;
